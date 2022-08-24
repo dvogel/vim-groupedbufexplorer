@@ -769,7 +769,7 @@ enddef
 
 def MoveCursorToFirstBuffer(): void
     cursor(1, 1)
-    normal J
+    silent! normal J
 enddef
 
 def RebuildBufferList(): void
