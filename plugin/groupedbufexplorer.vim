@@ -121,8 +121,19 @@ var _report = &report
 
 def DebugDump(): void
     echo keys(fileGroups)
-    echo mruGroups
-    echo mruBuffers
+
+    echo "----------------"
+    echo "MRU Group Stack:"
+    for groupMruItem in sort(items(copy(mruGroups)), (a, b) => a[1] - b[1])
+        echo "MRU " .. groupMruItem[1] .. " GROUP " .. groupMruItem[0]
+    endfor
+
+    echo "-----------------"
+    echo "MRU Buffer Stack:"
+    for bufMruItem in sort(items(copy(mruBuffers)), (a, b) => a[1] - b[1])
+        var bufName = bufname(str2nr(bufMruItem[0]))
+        echo "MRU " .. bufMruItem[1] .. " => BUF #" .. bufMruItem[0] .. " - " .. bufName
+    endfor
     echo mruCounter
     for bufObj in allBuffers
         echo bufObj
