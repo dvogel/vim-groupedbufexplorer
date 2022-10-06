@@ -558,9 +558,9 @@ def CalcFieldWidths(bufList: list<dict<any>>): list<number>
     return widths
 enddef
 
-def BuildBufferListLine(bufObj: dict<any>, w: list<number>): string
-    var fieldFmtStr = "    %" .. w[0] .. "S %S"
-    return printf(fieldFmtStr, bufObj.bufnr, bufObj.listname)
+def BuildBufferListLine(bufObj: dict<any>, mru: number, w: list<number>): string
+    var fieldFmtStr = "    %" .. w[0] .. "S [%4d]  %S"
+    return printf(fieldFmtStr, bufObj.bufnr, mru, bufObj.listname)
 enddef
 
 def BuildGroupBufferLines(grpList: list<dict<any>>): list<string>
@@ -583,7 +583,7 @@ def BuildGroupBufferLines(grpList: list<dict<any>>): list<string>
             continue
         endif
 
-        add(lines, BuildBufferListLine(bufObj, widths))
+        add(lines, BuildBufferListLine(bufObj, get(mruBuffers, bufObj.bufnr, -1), widths))
     endfor
     return lines
 enddef
