@@ -86,6 +86,8 @@ endif
 
 vim9script
 
+var ERR_DICT = {}
+
 var bufListLinePattern = '^\s\+\(\d\+\)\s\+.*'
 var noNamePlaceholder = "[No Name]"
 var defaultGroupKey = 'Ungrouped Files'
@@ -180,11 +182,17 @@ def LookupBuf(bufnr: number): any
 enddef
 
 def MRUTick(bufnr: number): void
-	var bufObj = LookupBuf(bufnr)
-	if bufObj != v:null
-		mruGroups[bufObj.groupkey] = NextMRUCounter()
-		mruBuffers[bufnr] = NextMRUCounter()
-	endif
+    var bufObj = LookupBuf(bufnr)
+    if bufObj == v:null
+        bufObj = CollectSingleBufferInfo(bufnr)
+        if bufObj != ERR_DICT
+            add(allBuffers, bufObj)
+        endif
+    endif
+    if bufObj != v:null
+        mruGroups[bufObj.groupkey] = NextMRUCounter()
+        mruBuffers[bufnr] = NextMRUCounter()
+    endif
 enddef
 
 def MRUPop(bufnr: number): void
@@ -468,41 +476,49 @@ def InferBufferGroupKey(bufObj: dict<any>): void
     endif
 enddef
 
+def ConstructBufObj(nativeBufObj: any): dict<any>
+    var bufObj = {
+        'bufnr': nativeBufObj.bufnr,
+        'hidden': nativeBufObj.hidden,
+        'listed': !!(nativeBufObj.listed == 1),
+        'name': nativeBufObj.name,
+        'loaded': nativeBufObj.loaded,
+        'line': nativeBufObj.lnum,
+        'ftype': getftype(nativeBufObj.name),
+        'listname': bufname(nativeBufObj.bufnr),
+        'groupkey': defaultGroupKey,
+    }
+
+    if bufObj.ftype == "link"
+        var realPath = resolve(bufObj.name)
+        bufObj.ftype = getftype(realPath)
+    endif
+
+    InferBufferGroupKey(bufObj)
+
+    return bufObj
+enddef
+
+def CollectSingleBufferInfo(bufnr: number): dict<any>
+    if ShouldIgnore(bufnr)
+        return ERR_DICT
+    endif
+
+    for nativeBufObj in getbufinfo(bufnr)
+        return ConstructBufObj(nativeBufObj)
+    endfor
+
+    return ERR_DICT
+enddef
+
 def CollectBufferInfo(): list<dict<any>>
     var all = []
 
     for nativeBufObj in getbufinfo()
-        if nativeBufObj.name == ""
+        if ShouldIgnore(nativeBufObj.bufnr)
             continue
         endif
-
-        if nativeBufObj.name == pluginBufName
-            continue
-        endif
-
-        if bufname(nativeBufObj.bufnr) == pluginBufName
-            continue
-        endif
-
-        var bufObj = {
-            'bufnr': nativeBufObj.bufnr,
-            'hidden': nativeBufObj.hidden,
-            'listed': !!(nativeBufObj.listed == 1),
-            'name': nativeBufObj.name,
-            'loaded': nativeBufObj.loaded,
-            'line': nativeBufObj.lnum,
-            'ftype': getftype(nativeBufObj.name),
-            'listname': bufname(nativeBufObj.bufnr),
-            'groupkey': defaultGroupKey,
-            }
-
-        if bufObj.ftype == "link"
-            var realPath = resolve(bufObj.name)
-            bufObj.ftype = getftype(realPath)
-        endif
-
-        InferBufferGroupKey(bufObj)
-
+        var bufObj = ConstructBufObj(nativeBufObj)
         add(all, bufObj)
     endfor
 
