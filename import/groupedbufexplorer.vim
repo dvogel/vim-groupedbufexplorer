@@ -449,6 +449,8 @@ def CreateHelpLines(): list<string>
 enddef
 
 def InferBufferGroupKey(bufObj: dict<any>): void
+    bufObj.groupkey = defaultGroupKey
+
     if bufObj.ftype == "dir"
         bufObj.listname = "[DIR] " .. bufObj.listname
         bufObj.groupkey = bufObj.listname
