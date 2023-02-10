@@ -408,8 +408,9 @@ def SetupSyntax(): void
         syn match GBufExHeader       /^--- .*:$/ contains=GBufExHeaderGroupKey
         syn match GBufExHeaderGroupKey /--- \zs.*\ze:$/ contained
         syn match GBufListEntry /\s\s\s\s\d\+.*$/ contains=GBufExBufNr
-        syn match GBufExBufNr /\s\s\s\s\zs\d\+/ contained nextgroup=GBufExFilename skipwhite
-        syn match GBufExFilename /[^\d\s].*$/ contained
+        syn match GBufExBufNr /\s\s\s\s\zs\d\+/ contained nextgroup=GBufExDirname,GBufExBasename skipwhite
+        syn match GBufExDirname /[^\d\s].*[/]/ contained nextgroup=GBufExBasename
+        syn match GBufExBasename /[^/]\+$/ contained
     endif
 enddef
 
