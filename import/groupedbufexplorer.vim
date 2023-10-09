@@ -559,7 +559,7 @@ def FocalBufGroupKey(): string
 enddef
 
 def BuildGroupHeaderLine(gk: string): string
-    return "--- " .. gk .. ":"
+    return "--- " .. gk .. " [" .. get(mruGroups, gk, "??") .. "]:"
 enddef
 
 def CalcFieldWidths(bufList: list<dict<any>>): list<number>
