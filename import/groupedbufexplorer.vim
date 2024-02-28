@@ -391,8 +391,8 @@ enddef
 def MapKeys(): void
     nnoremap <script> <silent> <nowait> <buffer> <2-leftmouse>   :call <SID>SelectBuffer()<CR>
     nnoremap <script> <silent> <nowait> <buffer> <CR>            :call <SID>SelectBuffer()<CR>
-    nnoremap <script> <silent> <nowait> <buffer> J               /---.*\n\s\+\zs\d<CR>
-    nnoremap <script> <silent> <nowait> <buffer> K               ?---.*\n\s\+\zs\d\+\s<CR>
+    nnoremap <script> <silent> <nowait> <buffer> J               :GBufExNextGroupHeader<CR>
+    nnoremap <script> <silent> <nowait> <buffer> K               :GBufExPrevGroupHeader<CR>
     nnoremap <script> <silent> <nowait> <buffer> <F1>            :call <SID>ToggleHelp()<CR>
     nnoremap <script> <silent> <nowait> <buffer> d               :call <SID>MaybeDeleteBuffer("delete")<CR>
     xnoremap <script> <silent> <nowait> <buffer> d               :call <SID>MaybeDeleteBuffer("delete")<CR>
