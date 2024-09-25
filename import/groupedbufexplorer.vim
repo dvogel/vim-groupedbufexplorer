@@ -188,10 +188,9 @@ def MRUTick(bufnr: number): void
         if bufObj != ERR_DICT
             add(allBuffers, bufObj)
         endif
-    else
-        mruGroups[bufObj.groupkey] = NextMRUCounter()
-        mruBuffers[bufnr] = NextMRUCounter()
     endif
+    mruGroups[bufObj.groupkey] = NextMRUCounter()
+    mruBuffers[bufnr] = NextMRUCounter()
 enddef
 
 def MRUPop(bufnr: number): void
